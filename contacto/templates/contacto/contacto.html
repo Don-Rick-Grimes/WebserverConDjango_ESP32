@@ -1,0 +1,42 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} Contacto {%endblock%}
+
+{%block content%}
+<!-- Message -->
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                <div class="cta-inner text-center rounded">
+                    <h2 class="section-heading mb-4">
+                        <span class="section-heading-lower" style="color: white;">Contacto</span>
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="formulario">
+        <form action="" method="POST" style="text-align: center;">
+            {%csrf_token%}
+            <table style="color: white; margin: 10px auto">
+                {{miFormulario.as_table}}  
+            </table>
+            <input type="submit" value="Enviar" style="width: 20%;">
+            <input type="reset" value="Reset" style="width: 20%;">
+        </form>
+        {%if "valido" in request.GET%}
+            <p style="color: white;">Enviado satisfactoriamente</p>
+        {%endif%} 
+        {%if "envioFallo" in request.GET%}
+            <p style="color: white;">El envio fallo</p>
+        {%endif%} 
+
+    </div>
+    <!--<p style="color: white;">{{request.POST}}</p>-->    
+</section>
+{%endblock%}

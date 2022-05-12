@@ -1,0 +1,90 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} ESP 32 con WIFI{%endblock%}
+
+{%block content%}
+
+<!-- Message -->
+<section class="page-section cta">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-9 mx-auto">
+        <h1>Oprima el switch:</h1>
+        <p id='parrafo'>Estado {{Estado}}</p>
+        <img id="imagenSwitch" src="/media/esp32/Light-Siwtch-Off.jpg" alt="Imagen Switch" style="height: 250"
+          onclick="Switch()">
+        <div class="spinner-border" style="visibility: hidden;" id="loadingSpinner" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>&nbsp; &nbsp; &nbsp;&nbsp;
+        <img id="imagenBombillo" src="/media/esp32/Light-Bulb-off.jpg" alt="Imagen Bombillo"
+          style="height: 250"><br><br>
+        <!--<button onclick="Encender()">Encender</button><br><br>
+        <button onclick="Apagar()">Apagar</button>-->
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{%csrf_token%}
+<script>
+  var p = document.getElementById('parrafo');
+  var imagenBombillo = document.getElementById('imagenBombillo');
+  var imagenSwitch = document.getElementById('imagenSwitch');
+  var spinner = document.getElementById('loadingSpinner');
+
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  //
+  function Encender() {
+    spinner.style.visibility="visible"
+    fetch("{%url 'esp32'%}", {
+      method: "POST",
+      body: JSON.stringify({ Accion: "Encender" }),
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      mode: 'same-origin'
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      console.log(data);
+      p.innerText = data.Estado;
+      imagenBombillo.src = "/media/esp32/Light-Bulb-On.jpg";
+      imagenSwitch.src = "/media/esp32/Light-Siwtch-On.jpg";
+      spinner.style.visibility="hidden"
+    })
+  }
+  function Apagar() {
+    spinner.style.visibility="visible"
+    fetch("{%url 'esp32'%}", {
+      method: "POST",
+      body: JSON.stringify({ Accion: "Apagar" }),
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      mode: 'same-origin'
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      console.log(data);
+      p.innerText = data.Estado;
+      imagenBombillo.src = "/media/esp32/Light-Bulb-off.jpg";
+      imagenSwitch.src = "/media/esp32/Light-Siwtch-Off.jpg";
+      spinner.style.visibility="hidden"
+    })
+  }
+  function Switch() {
+    console.log(imagenSwitch.src)
+    if (imagenSwitch.src.endsWith("/media/esp32/Light-Siwtch-Off.jpg")) {
+      Encender();
+    }
+    else {
+      Apagar();
+    }
+  }
+</script>
+
+{%endblock%}

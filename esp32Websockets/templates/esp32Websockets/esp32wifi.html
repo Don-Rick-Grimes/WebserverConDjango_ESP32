@@ -1,0 +1,108 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} ESP 32 con WIFI Websockets{%endblock%}
+
+{%block content%}
+
+<!-- Message -->
+<section class="page-section cta">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-9 mx-auto">
+        <h1>Oprima el switch:</h1>
+        <p id='parrafo'>Estado: Conectando</p>
+        <img hidden id="imagenSwitch" src="/media/esp32/Light-Siwtch-Off.jpg" alt="Imagen Switch" style="height: 250"
+          onclick="SwitchAjax()">
+        <div class="spinner-border" style="visibility: visible;" id="loadingSpinner" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>&nbsp; &nbsp; &nbsp;&nbsp;
+        <img hidden id="imagenBombillo" src="/media/esp32/Light-Bulb-off.jpg" alt="Imagen Bombillo"
+          style="height: 250"><br><br>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{%csrf_token%}
+<script>
+  var p = document.getElementById('parrafo');
+  var imagenBombillo = document.getElementById('imagenBombillo');
+  var imagenSwitch = document.getElementById('imagenSwitch');
+  var spinner = document.getElementById('loadingSpinner');
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
+  let url = `ws://${window.location.host}/ws/socket-server/`
+  const chatSocket = new WebSocket(url)
+  chatSocket.onmessage = function (e) {
+    let data = JSON.parse(e.data)
+    console.log('DataWebsockets:', data)
+    if (data.type === 'chat') {
+      SwitchWebsockets(data.message)
+    }
+  }
+
+  AccionarESP32("Conectar");
+
+  function AccionarESP32(accion) {
+    spinner.style.visibility = "visible"
+    fetch("{%url 'esp32Websockets'%}", {
+      method: "POST",
+      body: JSON.stringify({ Accion: accion }),
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      mode: 'same-origin'
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      console.log('RespuestaAjaxEsp32', data);
+      SwitchWebsockets(data.Estado);
+      var message = data.Estado;
+      chatSocket.send(JSON.stringify({
+        'message': message
+      }))
+    })
+  }
+
+  //
+  function SwitchWebsockets(data) {
+    if (data == 'Encendido') {
+      p.innerText = `Estado: ${data}`;
+      imagenBombillo.src = "/media/esp32/Light-Bulb-On.jpg";
+      imagenSwitch.src = "/media/esp32/Light-Siwtch-On.jpg";
+      spinner.style.visibility = "hidden"
+      imagenBombillo.hidden = false;
+      imagenSwitch.hidden = false;
+    }
+    else if (data == 'Apagado') {
+      p.innerText = `Estado: ${data}`;
+      imagenBombillo.src = "/media/esp32/Light-Bulb-off.jpg";
+      imagenSwitch.src = "/media/esp32/Light-Siwtch-Off.jpg";
+      spinner.style.visibility = "hidden"
+      imagenBombillo.hidden = false;
+      imagenSwitch.hidden = false;
+    }
+    else {
+      p.innerText = `Estado: ${data}`;
+      spinner.style.visibility = "hidden"
+      imagenBombillo.hidden = true;
+      imagenSwitch.hidden = true;
+    }
+  }
+
+  //
+
+  function SwitchAjax() {
+    if (imagenSwitch.src.endsWith("/media/esp32/Light-Siwtch-Off.jpg")) {
+      AccionarESP32("Encender");
+    }
+    else {
+      AccionarESP32("Apagar");
+    }
+  }
+</script>
+
+{%endblock%}

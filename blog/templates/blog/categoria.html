@@ -1,0 +1,46 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} Blog {%endblock%}
+
+{%block content%}
+
+<div style="width:80%; margin: 0 auto; text-align: center; color: white;">
+    <h1>Categoria: {{categoria.nombre}}</h1>
+</div>
+
+{%for post in posts%}
+
+<section class="page-section clearfix">
+    <div class="container">
+        <div class="intro">
+            <img class="intro-img img-fluid mb-3 mb-lg-0 rounded" src="{{post.imagen.url}}" alt="{{post.imagen.url}}"
+                style="width: 40%">
+            <div class="intro-text left-0 text-center bg-faded p-5 rounded">
+                <h2 class="section-heading mb-4">
+                    <span class="section-heading-lower" style="color: aqua;">{{post.titulo}}</span>
+                    <span class="section-heading-upper">{{post.contenido}}</span>
+                </h2>
+                <p>
+                    Autor: {{post.autor}}  &nbsp | &nbsp  
+                    Categorias: 
+                    {%for categoria in post.categorias.all%}
+                        {{categoria.nombre}}
+                    {%endfor%}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{%endfor%}
+
+<section>
+    <div style="width:80%; margin: 0 auto; text-align: center; color: white;">
+        Categorias: &nbsp
+        {%for categoria in categorias%}
+            <a href="{%url 'categoria' categoria.id%}">{{categoria.nombre}}</a>&nbsp &nbsp
+        {%endfor%} 
+    </div>
+</section>
+
+{%endblock%}

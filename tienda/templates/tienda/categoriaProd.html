@@ -1,0 +1,38 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} Tienda {%endblock%}
+
+{%block content%}
+<div style="width:80%; margin: 0 auto; text-align: center; color: white;">
+    <h1>Categoria: {{categoria.nombre}}</h1>
+</div>
+
+<section>
+    <div class="container">
+        <div class="row">
+            {%for producto in productos%}
+            <div class="col-md-4" style="margin-top: 5px; margin-bottom: 5px;">
+                <div class="card" style="height: 100%;">
+                    <img src="{{producto.imagen.url}}" class="card-img-top">
+                    <div class="card-body" style="text-align: center;">
+                        <h6 class="card-title">{{producto.nombre}}</h6>
+                        <p class="card-text">${{producto.precio}}</p>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+</section>
+
+<section>
+    <div style="width:80%; margin: 0 auto; text-align: center; color: white;">
+        Categorias: &nbsp
+        {%for categoria in categorias%}
+        <a href="{%url 'categoriaProd' categoria.id%}">{{categoria.nombre}}</a>&nbsp &nbsp
+        {%endfor%}
+    </div>
+</section>
+
+{%endblock%}

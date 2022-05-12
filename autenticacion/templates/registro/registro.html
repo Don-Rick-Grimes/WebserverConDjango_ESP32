@@ -1,0 +1,18 @@
+{% extends 'proyecto_web1App/base.html' %}
+{%load static%}
+
+{%block title%} Tienda {%endblock%}
+
+{%block content%}
+
+<section>
+    <div>
+        <form action="" method="post" style="color: white; width: 50%;">
+            {%csrf_token%}
+            {{form}}
+            <input type="submit" value="Guardad" class="btn btn-success" style="width: 40%;">
+        </form>
+    </div>
+</section>
+
+{%endblock%}
